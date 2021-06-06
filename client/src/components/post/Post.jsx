@@ -1,12 +1,23 @@
 import "./post.css";
 import { MoreVert } from "@material-ui/icons";
-import { Users } from "../../dummyData";
-import { useState } from "react";
+import { useState,useEffect } from "react";
+import axios from "axios";
+
 
 export default function Post({ post }) {
-  const [like,setLike] = useState(post.like)
-  const [isLiked,setIsLiked] = useState(false)
+  const [like,setLike] = useState(post.likes.length)
+  const [isLiked,setIsLiked] = useState(false);
+  const [user,setUser] = useState({})
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+
+  useEffect(()=>{
+    const fetchUsers = async() => {
+    const res = await axios.get("users/${post.userId}");
+    console.log(res.data);
+   // setUser(res.data);
+    };
+    fetchUsers();
+  },[])
 
   const likeHandler =()=>{
     setLike(isLiked ? like-1 : like+1)
@@ -19,11 +30,11 @@ export default function Post({ post }) {
           <div className="postTopLeft">
             <img
               className="postProfileImg"
-              src={Users.filter((u) => u.id === post?.userId)[0].profilePicture}
+              src={user.profilePicture || PF+"noavatar.png"}
               alt=""
             />
             <span className="postUsername">
-              {Users.filter((u) => u.id === post?.userId)[0].username}
+              {user.username}
             </span>
             <span className="postDate">{post.date}</span>
           </div>
@@ -37,8 +48,8 @@ export default function Post({ post }) {
         </div>
         <div className="postBottom">
           <div className="postBottomLeft">
-            <img className="likeIcon" src="assets/like.png" onClick={likeHandler} alt="" />
-            <img className="likeIcon" src="assets/heart.png" onClick={likeHandler} alt="" />
+            <img className="likeIcon" src={`${PF}like.png`}onClick={likeHandler} alt="" />
+            <img className="likeIcon" src={`${PF}heart.png`} onClick={likeHandler} alt="" />
             <span className="postLikeCounter">{like} people like it</span>
           </div>
           <div className="postBottomRight">
